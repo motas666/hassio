@@ -1,0 +1,249 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Kaplicka
+  # Location required to calculate the time the sun rises and sets
+  # latitude: 50.4999833
+  # longitude: 16.0743069
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  # elevation: 431
+  # metric for Metric, imperial for Imperial
+  # unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  # time_zone: Europe/Prague
+  # Customization file
+  customize: !include customize.yaml
+# Show links to resources in log and frontend
+# introduction:
+# Enables the frontend
+frontend:
+  themes:  !include themes.yaml
+# Enables configuration UI
+config:
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: example.duckdns.org:8123
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+# Discover some devices automatically
+discovery:
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+# Enables support for tracking state changes over time
+history:
+# View all events in a logbook
+logbook:
+#System Health - zkouška
+system_health:
+
+## nastavení logování
+logger:
+  default: info
+  
+## Enables a map showing the location of tracked devices
+map:
+
+## Track the sun
+sun:
+
+## weather
+weather:
+
+## Spotify
+spotify:
+  client_id: 
+  client_secret: 
+
+lovelace:
+#resources: !include resources.yaml
+
+mobile_app:
+
+##############
+## Influxdb ##
+##############
+
+influxdb:
+  host: 192.168.100.146
+  port: 8086
+  database: home_assistant
+  username: homeassistant
+  password: 
+  max_retries: 3
+  default_measurement: state
+  include:
+    entities:
+      - sensor.netatmo_meteokaplicka_indoor_temperature
+      - sensor.netatmo_meteokaplicka_outdoor_temperature
+      - sensor.teplomer_koupelna_temperature
+      - sensor.teplomer_loznice_temperature
+      - sensor.teplomer_pokojicek_temperature
+      - sensor.teplomer_chodba_temperature
+      - sensor.teplomer_lednice_temperature
+      - sensor.teplomer_mrazak_temperature
+      - sensor.pocasi_temperature
+      - sensor.netatmo_meteokaplicka_indoor_c02
+      - sensor.netatmo_meteokaplicka_indoor_humidity
+      - sensor.teplomer_koupelna_humidity
+      - sensor.teplomer_loznice_humidity
+      - sensor.teplomer_pokojicek_humidity
+      - sensor.teplomer_chodba_humidity
+      - sensor.teplomer_lednice_humidity
+      - sensor.teplomer_mrazak_humidity
+      - sensor.netatmo_meteokaplicka_outdoor_humidity
+      - sensor.netatmo_meteokaplicka_indoor_noise
+      - sensor.netatmo_meteokaplicka_indoor_pressure
+      - sensor.netatmo_meteokaplicka_outdoor_pressure
+      - binary_sensor.dvere_chodba
+      - binary_sensor.trezor
+      - binary_sensor.zvonek
+      - device_tracker.kata_iphone
+      - device_tracker.tom_iphone
+      - sensor.fibaro_system_fgsd002_smoke_sensor_temperature
+      - sensor.speedtest_ping
+      - sensor.speedtest_upload
+      - sensor.speedtest_download
+## Light
+light:
+  - platform: flux_led
+    ##automatic_add: true
+    devices:
+      192.168.100.92:
+        name: flux_led_tv
+
+## Camera
+camera:
+  - platform: generic
+    name: camera_tplink
+    username: admin
+    password: admin
+    still_image_url: http://192.168.100.21/jpg/image.jpg
+    stream_source: rtsp://192.168.100.21:8554/
+
+  - platform: mjpeg
+    mjpeg_url: http://192.168.100.98:2971/camera/stream
+    name: camera_wallpanel
+    
+## Telegram
+telegram_bot:
+  - platform: polling
+    api_key: 
+    allowed_chat_ids:
+      - 
+## Telegram - seznam příjemců
+notify:
+  - name: motas
+    platform: telegram
+    chat_id: 
+
+## ZWave
+zwave:
+  usb_path: /dev/serial/by-id/usb-0658_0200-if00
+
+## Trackování přítomnosti a polohy
+device_tracker:
+## trackování podle routeru
+  - platform: nmap_tracker
+    hosts: 192.168.100.0/24
+## trackování podle sdílení polohy Google Maps
+  - platform: google_maps
+    username: 
+
+## MQTT broker nastaveni
+mqtt:
+    broker: 192.168.100.146
+    username: 
+    password: 
+    discovery: true
+## MQTT Sonoff zasuvka venkovni IP55 balkon
+switch Z_balkon:
+      platform: mqtt
+      name: "zasuvka_balkon"
+      state_topic: "stat/Z_balkon/POWER"
+      command_topic: "cmnd/Z_balkon/POWER"
+      qos: 1
+      payload_on: "ON"
+      payload_off: "OFF"
+      retain: true
+## MQTT Sonoff TH16 spinac s teplomerem
+switch srf_01:
+      platform: mqtt
+      name: "spinac SRF_01"
+      state_topic: "stat/SRF_01/POWER"
+      command_topic: "cmnd/SRF_01/POWER"
+      qos: 1
+      payload_on: "ON"
+      payload_off: "OFF"
+      retain: true
+
+## NetAtmo
+netatmo:
+  client_id: 
+  client_secret: 
+#  api_key: 
+#  secret_key: 
+#  username: tomas@rtyne.com
+#  password: 
+#  discovery: true
+
+## Roomba - stará konfigurace, nyní integrace
+#  vacuum:
+#    - platform: roomba
+#      host: 192.168.100.107
+#      username: 
+#      password: 
+
+## Speedtest
+speedtestdotnet:
+  scan_interval:
+    minutes: 30
+  monitored_conditions:
+    - ping
+    - download
+    - upload
+
+
+## text to speech
+tts:
+  - platform: google_translate
+    service_name: google_translate_say
+
+## Cloud
+cloud:
+
+############
+## switch ##
+############
+
+##########
+## Cast ##
+##########
+
+cast:
+  media_player:
+    - host: 192.168.100.117 # Google Chromecast Audio 
+    - host: 192.168.100.120 # Google home mini nest
+
+###############
+### Webhook ###
+###############
+
+webhook:
+
+    
+####################
+## Python Scripts ##
+####################
+
+python_script:
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+sensor: !include sensor.yaml
+binary_sensor: !include binary_sensor.yaml
